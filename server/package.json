@@ -1,0 +1,24 @@
+{
+  "name": "practice-manager-server",
+  "version": "1.0.0",
+  "main": "./src/index.js",
+  "type": "module",
+  "repository": "https://github.com/ZxXxR/practice-manager.git",
+  "author": "ZxXxR <mrfreyzi1@yandex.ru>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "prisma:postgres": "npx prisma generate --schema=./schemas/postgres.prisma"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^8.3.0",
+    "@fastify/cors": "^8.2.1",
+    "@fastify/helmet": "^10.1.0",
+    "@fastify/jwt": "^6.7.1",
+    "@prisma/client": "^4.12.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.15.0",
+    "prisma": "^4.12.0"
+  }
+}

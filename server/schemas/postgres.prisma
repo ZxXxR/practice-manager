@@ -1,0 +1,127 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL_POSTGRES")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Group {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Student Student[]
+
+  @@map("groups")
+}
+
+model Contract {
+  id       Int        @id @default(autoincrement())
+  name     String
+  Practice Practice[]
+
+  @@map("contracts")
+}
+
+model Student {
+  id         Int        @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  secondName String
+  groupId    Int
+  group      Group      @relation(fields: [groupId], references: [id])
+  Practice   Practice[]
+
+  @@map("students")
+}
+
+model Form {
+  id   Int    @id @default(autoincrement())
+  name String
+  Base Base[]
+
+  @@map("legal_forms")
+}
+
+model Direction {
+  id   Int    @id @default(autoincrement())
+  name String
+  Base Base[]
+
+  @@map("directions")
+}
+
+model Person {
+  id             Int        @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  secondName     String
+  number         String
+  email          String
+  position       String
+  communication  String
+  type           PersonType
+  responsible    Base[]     @relation("responsible")
+  representative Base[]     @relation("representative")
+
+  @@map("persons")
+}
+
+model Base {
+  id               Int        @id @default(autoincrement())
+  name             String
+  formId           Int
+  form             Form       @relation(fields: [formId], references: [id])
+  directionId      Int
+  direction        Direction  @relation(fields: [directionId], references: [id])
+  representativeId Int
+  representative   Person     @relation("representative", fields: [representativeId], references: [id])
+  responsibleId    Int
+  responsible      Person     @relation("responsible", fields: [responsibleId], references: [id])
+  comment          String
+  Practice         Practice[]
+
+  @@map("bases")
+}
+
+model Practice {
+  id         Int      @id @default(autoincrement())
+  studentId  Int      @unique
+  student    Student  @relation(fields: [studentId], references: [id])
+  contractId Int
+  contract   Contract @relation(fields: [contractId], references: [id])
+  baseId     Int
+  base       Base     @relation(fields: [baseId], references: [id])
+  periodId   Int
+  period     Date     @relation(fields: [periodId], references: [id])
+  comment    String
+  type       Boolean  @default(true)
+
+  @@map("practices")
+}
+
+model Date {
+  id        Int        @id @default(autoincrement())
+  dateStart DateTime
+  dateEnd   DateTime
+  Practice  Practice[]
+
+  @@map("dates")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  login      String   @unique
+  password   String
+  token      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum PersonType {
+  Responsible
+  Representative
+}
