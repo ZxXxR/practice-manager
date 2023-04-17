@@ -1,18 +1,18 @@
 export class Practice {
     constructor({ 
         id, 
-        studentId,
-        contractId,
-        baseId,
-        periodId,
-        comment,
+        student,
+        contract,
+        base,
+        period,
+        comment = '',
         type
     }) {
         this.id = id;
-        this.studentId = studentId;
-        this.contractId = contractId;
-        this.baseId = baseId;
-        this.periodId = periodId;
+        this.student = student;
+        this.contract = contract;
+        this.base = base;
+        this.period = period;
         this.comment = comment;
         this.type = type;
     }
@@ -20,10 +20,10 @@ export class Practice {
     toJSON() {
         return {
             id: this.id,
-            student: this.studentId,
-            contract: this.contractId,
-            base: this.baseId,
-            period: this.periodId,
+            studentId: this.student,
+            contractId: this.contract,
+            baseId: this.base,
+            periodId: this.period,
             comment: this.comment,
             type: this.type
         };

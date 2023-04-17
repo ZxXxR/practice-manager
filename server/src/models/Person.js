@@ -3,11 +3,11 @@ export class Person {
         id, 
         firstName,
         lastName,
-        secondName,
-        number,
-        email,
-        position,
-        communication,
+        secondName = '',
+        number = '',
+        email = '',
+        position = '',
+        communication = '',
         type
     }) {
         this.id = id;

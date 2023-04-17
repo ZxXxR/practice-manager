@@ -1,16 +1,16 @@
 export class Contract {
     constructor({ 
         id, 
-        name
+        number
     }) {
         this.id = id;
-        this.name = name;
+        this.number = number;
     }
 
     toJSON() {
         return {
             id: this.id,
-            name: this.name
+            number: this.number
         };
     }
 }

@@ -2,18 +2,18 @@ export class Base {
     constructor({ 
         id, 
         name,
-        formId,
-        directionId,
-        responsibleId,
-        representativeId,
-        comment
+        form,
+        direction,
+        responsible,
+        representative,
+        comment = ''
     }) {
         this.id = id;
         this.name = name;
-        this.formId = formId;
-        this.directionId = directionId;
-        this.responsibleId = responsibleId;
-        this.representativeId = representativeId;
+        this.form = form;
+        this.direction = direction;
+        this.responsible = responsible;
+        this.representative = representative;
         this.comment = comment;
     }
 
@@ -21,10 +21,10 @@ export class Base {
         return {
             id: this.id,
             name: this.name,
-            form: this.formId,
-            direction: this.directionId,
-            responsible: this.responsibleId,
-            representative: this.representativeId,
+            formId: this.form,
+            directionId: this.direction,
+            responsibleId: this.responsible,
+            representativeId: this.representative,
             comment: this.comment
         };
     }

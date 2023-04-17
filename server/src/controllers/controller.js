@@ -1,5 +1,5 @@
 export class Controller {
-    static async get(req, res) {
+    static async getAll(req, res) {
         try {
             return res.send({ success: true });
         } catch (error) {
@@ -17,7 +17,7 @@ export class Controller {
         }
     }
 
-    static async getInfo(req, res) {
+    static async get(req, res) {
         try {
             return res.send({ success: true });
         } catch (error) {
