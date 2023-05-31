@@ -1,4 +1,4 @@
-export class PracticeAssignment {
+export class Report {
     constructor({ 
         id, 
         practice_id,
