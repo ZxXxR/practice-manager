@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/groups/', GroupController.getAll);
-    fastify.post('/groups/', GroupController.create);
-    fastify.get('/groups/:id/', GroupController.get);
-    fastify.put('/groups/:id/', GroupController.update);
-    fastify.delete('/groups/:id/', GroupController.delete);
+    fastify.get('/', GroupController.getAll);
+    fastify.post('/', GroupController.create);
+    fastify.get('/:id/', GroupController.get);
+    fastify.put('/:id/', GroupController.update);
+    fastify.delete('/:id/', GroupController.delete);
     done();
 }

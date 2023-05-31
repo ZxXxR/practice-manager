@@ -1,30 +1,34 @@
 export class Practice {
     constructor({ 
         id, 
-        student,
-        contract,
-        base,
-        period,
-        comment = '',
-        type
+        name,
+        direction,
+        start_date,
+        end_date,
+        type = 'production'
     }) {
+        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof name !== 'string') throw new Error('Parameter "name" must be "string" type');
+        if (typeof direction !== 'number') throw new Error('Parameter "direction" must be "number" type');
+        if (!(start_date instanceof Date)) throw new Error('Parameter "start_date" must be "date" type');
+        if (!(end_date instanceof Date)) throw new Error('Parameter "end_date" must be "date" type');
+        if (typeof type !== 'string') throw new Error('Parameter "type" must be "string" type');
+
         this.id = id;
-        this.student = student;
-        this.contract = contract;
-        this.base = base;
-        this.period = period;
-        this.comment = comment;
+        this.name = name;
+        this.direction = direction;
+        this.start_date = start_date;
+        this.end_date = end_date;
         this.type = type;
     }
 
     toJSON() {
         return {
             id: this.id,
-            studentId: this.student,
-            contractId: this.contract,
-            baseId: this.base,
-            periodId: this.period,
-            comment: this.comment,
+            name: this.name,
+            direction: this.direction,
+            start_date: this.start_date,
+            end_date: this.end_date,
             type: this.type
         };
     }

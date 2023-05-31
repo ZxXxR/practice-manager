@@ -3,6 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export class StudentController extends Controller {
+export class EnterpriseController extends Controller {
 
 }

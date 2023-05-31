@@ -1,4 +1,4 @@
-import { StudentController } from '../controllers/studentController.js';
+import { AssignmentController } from '../controllers/assignmentController.js';
 import apiMiddleware from '../middlewares/apiMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
 
@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/students/', StudentController.getAll);
-    fastify.post('/students/', StudentController.create);
-    fastify.get('/students/:id/', StudentController.get);
-    fastify.put('/students/:id/', StudentController.update);
-    fastify.delete('/students/:id/', StudentController.delete);
+    fastify.get('/', AssignmentController.getAll);
+    fastify.post('/', AssignmentController.create);
+    fastify.get('/:id/', AssignmentController.get);
+    fastify.put('/:id/', AssignmentController.update);
+    fastify.delete('/:id/', AssignmentController.delete);
     done();
 }

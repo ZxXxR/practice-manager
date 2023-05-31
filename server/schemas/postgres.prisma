@@ -7,140 +7,163 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Roles {
-  id           Int     @id @default(autoincrement())
+model Direction {
+  id       Int        @id @default(autoincrement())
+  name     String
+  Practice Practice[]
+
+  @@map("practice_directions")
+}
+
+model Role {
+  id           Int               @id @default(autoincrement())
   name         String
-  access_level Int     @default(0)
-  is_default   Boolean @default(false)
-  users        UserRoles[]
+  access_level Int               @default(0)
+  is_default   Boolean           @default(false)
+  users        RoleAssignments[] @relation("RoleAssignmentToRole")
 
   @@map("roles")
 }
 
 model Group {
-  id     Int    @id @default(autoincrement())
-  number String
-  User   User[]
+  id     Int      @id @default(autoincrement())
+  name   String
+  Person Person[]
 
   @@map("groups")
 }
 
-model Contract {
-  id       Int        @id @default(autoincrement())
-  number   String
-  Practice Practice[]
-
-  @@map("contracts")
-}
-
-model Form {
-  id   Int    @id @default(autoincrement())
-  name String
-  Base Base[]
-
-  @@map("legal_forms")
-}
-
-model Direction {
-  id   Int    @id @default(autoincrement())
-  name String
-  Base Base[]
-
-  @@map("directions")
-}
-
-model Person {
-  id             Int        @id @default(autoincrement())
-  firstName      String
-  lastName       String
-  secondName     String
-  number         String
-  email          String
-  position       String
-  communication  String
-  type           PersonType
-  responsible    Base[]     @relation("responsible")
-  representative Base[]     @relation("representative")
-
-  @@map("persons")
-}
-
-model Base {
-  id               Int        @id @default(autoincrement())
-  name             String
-  form             Int
-  formId           Form       @relation(fields: [form], references: [id])
-  direction        Int
-  directionId      Direction  @relation(fields: [direction], references: [id])
-  representative   Int
-  representativeId Person     @relation("representative", fields: [representative], references: [id])
-  responsible      Int
-  responsibleId    Person     @relation("responsible", fields: [responsible], references: [id])
-  comment          String
-  Practice         Practice[]
-
-  @@map("bases")
-}
-
 model Practice {
-  id         Int          @id @default(autoincrement())
-  student    Int          @unique
-  studentId  User         @relation(fields: [student], references: [id])
-  contract   Int
-  contractId Contract     @relation(fields: [contract], references: [id])
-  base       Int
-  baseId     Base         @relation(fields: [base], references: [id])
-  period     Int
-  periodId   Date         @relation(fields: [period], references: [id])
-  comment    String
-  type       PracticeType @default(production)
+  id           Int          @id @default(autoincrement())
+  name         String
+  direction    Int
+  direction_id Direction    @relation(fields: [direction], references: [id])
+  start_date   DateTime     @db.Date
+  end_date     DateTime     @db.Date
+  type         PracticeType @default(production)
+
+  practiceAssignments PracticeAssignments[] @relation("PracticeAssignmentsOnPractice")
 
   @@map("practices")
 }
 
-model Date {
-  id         Int        @id @default(autoincrement())
-  date_start DateTime
-  date_end   DateTime
-  Practice   Practice[]
+model Person {
+  id           Int             @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  second_name  String?
+  photo        String?
+  phone_number String?
+  email        String?
+  position     PersonPosition? @default(student)
+  group_id     Int?
+  group        Group?          @relation(fields: [group_id], references: [id])
+  comment      String?         @db.Text
+  created_at   DateTime        @db.Timestamp()
+  updated_at   DateTime        @db.Timestamp()
+  Enterprise   Enterprise[]
+  User         User[]
 
-  @@map("dates")
+  responsibles PracticeAssignments[] @relation("PracticeAssignmentsOnResponsible")
+  mentors      PracticeAssignments[] @relation("PracticeAssignmentsOnMentor")
+  students     PracticeAssignments[] @relation("PracticeAssignmentsOnStudent")
+
+  @@map("persons")
+}
+
+model Enterprise {
+  id                Int     @id @default(autoincrement())
+  representative_id Int
+  representative    Person  @relation(fields: [representative_id], references: [id])
+  legal_form        String
+  name              String
+  ogrn              String?
+  inn               String?
+  phone_number      String?
+  email             String?
+  legal_address     String?
+  comment           String? @db.Text
+
+  practiceAssignments PracticeAssignments[] @relation("PracticeAssignmentsOnEnterprise")
+
+  @@map("enterprises")
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  firstName  String
-  lastName   String
-  secondName String
-  username   String     @unique
-  login      String     @unique
+  id         Int               @id @default(autoincrement())
+  person_id  Int
+  person     Person            @relation(fields: [person_id], references: [id])
+  username   String
+  login      String
   password   String
   token      String
-  roles      UserRoles[]
-  group_id   Int        @default(-1)
-  group      Group      @relation(fields: [group_id], references: [id])
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  Practice   Practice[]
+  created_at DateTime          @db.Timestamp()
+  updated_at DateTime          @db.Timestamp()
+  roles      RoleAssignments[] @relation("RoleAssignmentToUser")
 
   @@map("users")
 }
 
-model UserRoles {
-  user   User  @relation(fields: [userId], references: [id])
-  userId Int
-  role   Roles @relation(fields: [roleId], references: [id])
-  roleId Int
+model Report {
+  id          Int            @id @default(autoincrement())
+  practice_id Int
+  mentor_id   Int
+  student_id  Int
+  date        DateTime       @db.Date
+  estimation  EstimationType
+  comment     String?        @db.Text
 
-  @@id([userId, roleId])
+  @@map("practice_reports")
 }
 
-enum PersonType {
+// Assignments
+
+model RoleAssignments {
+  id      Int  @id @default(autoincrement())
+  user_id Int
+  user    User @relation("RoleAssignmentToUser", fields: [user_id], references: [id])
+  role_id Int
+  role    Role @relation("RoleAssignmentToRole", fields: [role_id], references: [id])
+
+  @@map("role_assignments")
+}
+
+model PracticeAssignments {
+  id              Int        @id @default(autoincrement())
+  practice_id     Int
+  practice        Practice   @relation("PracticeAssignmentsOnPractice", fields: [practice_id], references: [id])
+  enterprise_id   Int
+  enterprise      Enterprise @relation("PracticeAssignmentsOnEnterprise", fields: [enterprise_id], references: [id])
+  responsible_id  Int
+  responsible     Person     @relation("PracticeAssignmentsOnResponsible", fields: [responsible_id], references: [id])
+  mentor_id       Int
+  mentor          Person     @relation("PracticeAssignmentsOnMentor", fields: [mentor_id], references: [id])
+  student_id      Int
+  student         Person     @relation("PracticeAssignmentsOnStudent", fields: [student_id], references: [id])
+  contract_number String
+
+  @@map("practice_assignments")
+}
+
+// Enums
+
+enum PersonPosition {
+  student
   responsible
   representative
+  mentor
+  admin
 }
 
 enum PracticeType {
+  education
   production
-  educational
+}
+
+enum EstimationType {
+  two
+  three
+  four
+  five
+  absent
 }

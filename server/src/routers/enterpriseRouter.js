@@ -1,4 +1,4 @@
-import { FormController } from '../controllers/formController.js';
+import { EnterpriseController } from '../controllers/enterpriseController.js';
 import apiMiddleware from '../middlewares/apiMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
 
@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/forms/', FormController.getAll);
-    fastify.post('/forms/', FormController.create);
-    fastify.get('/forms/:id/', FormController.get);
-    fastify.put('/forms/:id/', FormController.update);
-    fastify.delete('/forms/:id/', FormController.delete);
+    fastify.get('/', EnterpriseController.getAll);
+    fastify.post('/', EnterpriseController.create);
+    fastify.get('/:id/', EnterpriseController.get);
+    fastify.put('/:id/', EnterpriseController.update);
+    fastify.delete('/:id/', EnterpriseController.delete);
     done();
 }

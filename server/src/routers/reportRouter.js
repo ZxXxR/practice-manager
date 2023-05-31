@@ -1,4 +1,4 @@
-import { DateController } from '../controllers/dateController.js';
+import { ReportController } from '../controllers/reportController.js';
 import apiMiddleware from '../middlewares/apiMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
 
@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/dates/', DateController.getAll);
-    fastify.post('/dates/', DateController.create);
-    fastify.get('/dates/:id/', DateController.get);
-    fastify.put('/dates/:id/', DateController.update);
-    fastify.delete('/dates/:id/', DateController.delete);
+    fastify.get('/', ReportController.getAll);
+    fastify.post('/', ReportController.create);
+    fastify.get('/:id/', ReportController.get);
+    fastify.put('/:id/', ReportController.update);
+    fastify.delete('/:id/', ReportController.delete);
     done();
 }

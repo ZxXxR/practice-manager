@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/directions/', DirectionController.getAll);
-    fastify.post('/directions/', DirectionController.create);
-    fastify.get('/directions/:id/', DirectionController.get);
-    fastify.put('/directions/:id/', DirectionController.update);
-    fastify.delete('/directions/:id/', DirectionController.delete);
+    fastify.get('/', DirectionController.getAll);
+    fastify.post('/', DirectionController.create);
+    fastify.get('/:id/', DirectionController.get);
+    fastify.put('/:id/', DirectionController.update);
+    fastify.delete('/:id/', DirectionController.delete);
     done();
 }

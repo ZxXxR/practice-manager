@@ -1,4 +1,4 @@
-import { BaseController } from '../controllers/baseController.js';
+import { RoleController } from '../controllers/roleController.js';
 import apiMiddleware from '../middlewares/apiMiddleware.js';
 import roleMiddleware from '../middlewares/roleMiddleware.js';
 
@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/bases/', BaseController.getAll);
-    fastify.post('/bases/', BaseController.create);
-    fastify.get('/bases/:id/', BaseController.get);
-    fastify.put('/bases/:id/', BaseController.update);
-    fastify.delete('/bases/:id/', BaseController.delete);
+    fastify.get('/', RoleController.getAll);
+    fastify.post('/', RoleController.create);
+    fastify.get('/:id/', RoleController.get);
+    fastify.put('/:id/', RoleController.update);
+    fastify.delete('/:id/', RoleController.delete);
     done();
 }

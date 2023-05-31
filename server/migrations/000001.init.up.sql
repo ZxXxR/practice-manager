@@ -1,100 +1,105 @@
-CREATE TYPE PERSONTYPE AS ENUM ('responsible', 'representative');
-CREATE TYPE PRACTICETYPE AS ENUM ('educational', 'production');
-
-CREATE TABLE IF NOT EXISTS roles(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    access_level INT NOT NULL DEFAULT 0,
-    is_default BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "practice_directions" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS groups(
-    id SERIAL PRIMARY KEY,
-    number TEXT NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "roles" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL UNIQUE,
+    "access_level" INTEGER NOT NULL DEFAULT '0',
+    "is_default" BOOLEAN NOT NULL DEFAULT '0'
 );
 
-CREATE TABLE IF NOT EXISTS contracts(
-    id SERIAL PRIMARY KEY,
-    number TEXT NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "groups" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS legal_forms(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "practices" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "name" VARCHAR(255) NULL UNIQUE,
+    "direction" INTEGER NOT NULL,
+    "start_date" DATE NOT NULL,
+    "end_date" DATE NOT NULL,
+    "type" VARCHAR(255) CHECK ("type" IN('education', 'production')) NOT NULL DEFAULT 'education',
+    FOREIGN KEY("direction") REFERENCES "practice_directions"("id")
 );
 
-CREATE TABLE IF NOT EXISTS directions(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "persons" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "first_name" VARCHAR(255) NOT NULL,
+    "last_name" VARCHAR(255) NOT NULL,
+    "second_name" VARCHAR(255) NULL,
+    "photo" VARCHAR(255) NULL,
+    "phone_number" VARCHAR(255) NULL,
+    "email" VARCHAR(255) NULL,
+    "position" VARCHAR(255) NOT NULL CHECK ("type" IN('student', 'responsible', 'mentor', 'representative', 'admin')) NOT NULL DEFAULT 'student',
+    "group_id" INTEGER NULL,
+    "comment" TEXT NULL,
+    "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    FOREIGN KEY("group_id") REFERENCES "groups"("id")
 );
 
-CREATE TABLE IF NOT EXISTS dates(
-    id SERIAL PRIMARY KEY,
-    date_start DATE NOT NULL,
-    date_end DATE NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "enterprises" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "representative_id" INTEGER NOT NULL,
+    "legal_form" VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255) NOT NULL UNIQUE,
+    "ogrn" VARCHAR(255) NULL UNIQUE,
+    "inn" VARCHAR(255) NULL UNIQUE,
+    "phone_number" VARCHAR(255) NULL,
+    "email" VARCHAR(255) NULL,
+    "legal_address" VARCHAR(255) NULL,
+    "comment" TEXT NULL,
+    FOREIGN KEY("representative_id") REFERENCES "persons"("id")
 );
 
-CREATE TABLE IF NOT EXISTS persons(
-    id SERIAL PRIMARY KEY,
-    firstName VARCHAR(32) NOT NULL,
-    lastName VARCHAR(32) NOT NULL,
-    secondName VARCHAR(32),
-    number TEXT,
-    email VARCHAR(64),
-    position Text,
-    communication TEXT,
-    type PERSONTYPE NOT NULL,
-    UNIQUE(id)
+CREATE TABLE IF NOT EXISTS "users" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "person_id" INTEGER NOT NULL,
+    "username" VARCHAR(255) NOT NULL UNIQUE,
+    "login" VARCHAR(255) NOT NULL UNIQUE,
+    "password" VARCHAR(255) NOT NULL,
+    "token" VARCHAR(255) NOT NULL UNIQUE,
+    "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    "updated_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+    FOREIGN KEY("person_id") REFERENCES "persons"("id")
 );
 
-CREATE TABLE IF NOT EXISTS bases(
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    form INTEGER NOT NULL,
-    direction INTEGER NOT NULL,
-    representative INTEGER NOT NULL,
-    responsible INTEGER NOT NULL,
-    comment TEXT,
-    UNIQUE(id),
-    FOREIGN KEY (form) REFERENCES legal_forms(id),
-    FOREIGN KEY (direction) REFERENCES directions(id),
-    FOREIGN KEY (representative) REFERENCES persons(id),
-    FOREIGN KEY (responsible) REFERENCES persons(id)
+CREATE TABLE IF NOT EXISTS "practice_reports" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "practice_id" INTEGER NOT NULL,
+    "mentor_id" INTEGER NOT NULL,
+    "student_id" INTEGER NOT NULL,
+    "date" DATE NOT NULL,
+    "estimation" VARCHAR(255) CHECK ("estimation" IN('two', 'three', 'four', 'five', 'absent')) NOT NULL,
+    "comment" TEXT NULL,
+    FOREIGN KEY("student_id") REFERENCES "persons"("id"),
+    FOREIGN KEY("practice_id") REFERENCES "practices"("id"),
+    FOREIGN KEY("mentor_id") REFERENCES "persons"("id")
 );
 
-
-CREATE TABLE IF NOT EXISTS users(
-    id SERIAL PRIMARY KEY,
-    firstName VARCHAR(32) NOT NULL,
-    lastName VARCHAR(32) NOT NULL,
-    secondName VARCHAR(32),
-    username VARCHAR(32) NOT NULL UNIQUE,
-    login VARCHAR(32) NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    token VARCHAR(32) NOT NULL,
-    roles INT[],
-    group_id INTEGER,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (group_id) REFERENCES groups(id)
+CREATE TABLE IF NOT EXISTS "role_assignments" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "user_id" INTEGER NOT NULL,
+    "role_id" INTEGER NOT NULL,
+    FOREIGN KEY("role_id") REFERENCES "roles"("id"),
+    FOREIGN KEY("user_id") REFERENCES "users"("id")
 );
 
-CREATE TABLE IF NOT EXISTS practices(
-    id SERIAL PRIMARY KEY,
-    student INTEGER NOT NULL UNIQUE,
-    contract INTEGER NOT NULL,
-    base INTEGER NOT NULL,
-    period INTEGER NOT NULL,
-    comment TEXT,
-    type PRACTICETYPE DEFAULT 'production',
-    FOREIGN KEY (student) REFERENCES users(id),
-    FOREIGN KEY (contract) REFERENCES contracts(id),
-    FOREIGN KEY (base) REFERENCES bases(id),
-    FOREIGN KEY (period) REFERENCES dates(id)
+CREATE TABLE IF NOT EXISTS "practice_assignments" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "practice_id" INTEGER NOT NULL,
+    "enterprise_id" INTEGER NOT NULL,
+    "responsible_id" INTEGER NOT NULL,
+    "mentor_id" INTEGER NOT NULL,
+    "student_id" INTEGER NOT NULL,
+    "contract_number" VARCHAR(255) NOT NULL,
+    UNIQUE("practice_id", "student_id"),
+    FOREIGN KEY("enterprise_id") REFERENCES "enterprises"("id"),
+    FOREIGN KEY("student_id") REFERENCES "persons"("id"),
+    FOREIGN KEY("mentor_id") REFERENCES "persons"("id"),
+    FOREIGN KEY("practice_id") REFERENCES "practices"("id"),
+    FOREIGN KEY("responsible_id") REFERENCES "persons"("id")
 );

@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/practices/', PracticeController.getAll);
-    fastify.post('/practices/', PracticeController.create);
-    fastify.get('/practices/:id/', PracticeController.get);
-    fastify.put('/practices/:id/', PracticeController.update);
-    fastify.delete('/practices/:id/', PracticeController.delete);
+    fastify.get('/', PracticeController.getAll);
+    fastify.post('/', PracticeController.create);
+    fastify.get('/:id/', PracticeController.get);
+    fastify.put('/:id/', PracticeController.update);
+    fastify.delete('/:id/', PracticeController.delete);
     done();
 }

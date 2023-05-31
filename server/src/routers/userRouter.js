@@ -11,10 +11,10 @@ export default (fastify, opts, done) => {
         });
     });
 
-    fastify.get('/users/', UserController.getAll);
-    fastify.post('/users/', UserController.create);
-    fastify.get('/users/:login/', UserController.get);
-    fastify.put('/users/:login/', UserController.update);
-    fastify.delete('/users/:login/', UserController.delete);
+    fastify.get('/', UserController.getAll);
+    fastify.post('/', UserController.create);
+    fastify.get('/:login/', UserController.get);
+    fastify.put('/:login/', UserController.update);
+    fastify.delete('/:login/', UserController.delete);
     done();
 }
