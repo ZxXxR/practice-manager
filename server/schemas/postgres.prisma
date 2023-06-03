@@ -43,6 +43,7 @@ model Practice {
   type         PracticeType @default(production)
 
   practiceAssignments PracticeAssignments[] @relation("PracticeAssignmentsOnPractice")
+  reports Report[] @relation("ReportPractice")
 
   @@map("practices")
 }
@@ -67,6 +68,8 @@ model Person {
   responsibles PracticeAssignments[] @relation("PracticeAssignmentsOnResponsible")
   mentors      PracticeAssignments[] @relation("PracticeAssignmentsOnMentor")
   students     PracticeAssignments[] @relation("PracticeAssignmentsOnStudent")
+  reportMentors Report[] @relation("ReportMentor")
+  reportStudents Report[] @relation("ReportStudent")
 
   @@map("persons")
 }
@@ -107,8 +110,11 @@ model User {
 model Report {
   id          Int            @id @default(autoincrement())
   practice_id Int
+  practice Practice @relation("ReportPractice", fields: [practice_id], references: [id])
   mentor_id   Int
+  mentor Person @relation("ReportMentor", fields: [mentor_id], references: [id])
   student_id  Int
+  student Person @relation("ReportStudent", fields: [student_id], references: [id])
   date        DateTime       @db.Date
   estimation  EstimationType
   comment     String?        @db.Text
@@ -119,12 +125,12 @@ model Report {
 // Assignments
 
 model RoleAssignments {
-  id      Int  @id @default(autoincrement())
   user_id Int
   user    User @relation("RoleAssignmentToUser", fields: [user_id], references: [id])
   role_id Int
   role    Role @relation("RoleAssignmentToRole", fields: [role_id], references: [id])
 
+  @@id([user_id, role_id])
   @@map("role_assignments")
 }
 

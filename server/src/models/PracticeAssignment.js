@@ -8,7 +8,7 @@ export class PracticeAssignment {
         student_id,
         contract_number
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof practice_id !== 'number') throw new Error('Parameter "practice_id" must be "number" type');
         if (typeof enterprise_id !== 'number') throw new Error('Parameter "enterprise_id" must be "number" type');
         if (typeof responsible_id !== 'number') throw new Error('Parameter "responsible_id" must be "number" type');

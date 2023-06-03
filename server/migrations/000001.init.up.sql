@@ -81,11 +81,11 @@ CREATE TABLE IF NOT EXISTS "practice_reports" (
 );
 
 CREATE TABLE IF NOT EXISTS "role_assignments" (
-    "id" SERIAL NOT NULL PRIMARY KEY,
     "user_id" INTEGER NOT NULL,
     "role_id" INTEGER NOT NULL,
-    FOREIGN KEY("role_id") REFERENCES "roles"("id"),
-    FOREIGN KEY("user_id") REFERENCES "users"("id")
+    CONSTRAINT "role_assignments_pkey" PRIMARY KEY ("user_id","role_id"),
+    FOREIGN KEY("user_id") REFERENCES "users"("id"),
+    FOREIGN KEY("role_id") REFERENCES "roles"("id")
 );
 
 CREATE TABLE IF NOT EXISTS "practice_assignments" (

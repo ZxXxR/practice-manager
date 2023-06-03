@@ -7,7 +7,7 @@ export class Practice {
         end_date,
         type = 'production'
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof name !== 'string') throw new Error('Parameter "name" must be "string" type');
         if (typeof direction !== 'number') throw new Error('Parameter "direction" must be "number" type');
         if (!(start_date instanceof Date)) throw new Error('Parameter "start_date" must be "date" type');

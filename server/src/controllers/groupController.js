@@ -14,7 +14,27 @@ export class GroupController extends Controller {
         }
     }
 
-    // create
+    static async create(req, res) {
+        try {
+            const { name } = req.body;
+
+            if (!name) return res.code(400).send();
+
+            const candidate = await prisma.group.findFirst({ where: { name } });
+
+            if (candidate) return res.code(409).send();
+
+            const newGroup = new Group({ name }),
+                query = await prisma.group.create({
+                    data: newGroup.toJSON()
+                });
+
+            return res.send(new Group(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 
     static async get(req, res) {
         try {

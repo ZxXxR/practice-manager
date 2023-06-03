@@ -8,7 +8,7 @@ export class Report {
         estimation,
         comment = ''
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof practice_id !== 'number') throw new Error('Parameter "practice_id" must be "number" type');
         if (typeof mentor_id !== 'number') throw new Error('Parameter "mentor_id" must be "number" type');
         if (typeof student_id !== 'number') throw new Error('Parameter "student_id" must be "number" type');

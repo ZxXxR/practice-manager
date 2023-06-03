@@ -14,7 +14,27 @@ export class DirectionController extends Controller {
         }
     }
 
-    // create
+    static async create(req, res) {
+        try {
+            const { name } = req.body;
+
+            if (!name) return res.code(400).send();
+
+            const candidate = await prisma.direction.findFirst({ where: { name } });
+
+            if (candidate) return res.code(409).send();
+
+            const newDirection = new Direction({ name }),
+                query = await prisma.direction.create({
+                    data: newDirection.toJSON()
+                });
+
+            return res.send(new Direction(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 
     static async get(req, res) {
         try {

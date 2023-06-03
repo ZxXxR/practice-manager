@@ -11,7 +11,7 @@ export class Enterprise {
         legal_address = "",
         comment = ""
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof representative_id !== 'number') throw new Error('Parameter "representative_id" must be "number" type');
         if (typeof legal_form !== 'string') throw new Error('Parameter "legal_form" must be "string" type');
         if (typeof name !== 'string') throw new Error('Parameter "name" must be "string" type');

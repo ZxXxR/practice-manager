@@ -4,7 +4,7 @@ export class PracticeAssignment {
         user_id,
         role_id
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof user_id !== 'number') throw new Error('Parameter "user_id" must be "number" type');
         if (typeof role_id !== 'number') throw new Error('Parameter "role_id" must be "number" type');
 

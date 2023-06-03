@@ -14,7 +14,31 @@ export class RoleController extends Controller {
         }
     }
 
-    // create
+    static async create(req, res) {
+        try {
+            const { name, access_level, is_default } = req.body;
+
+            if (!name) return res.code(400).send();
+
+            const candidate = await prisma.role.findFirst({ where: { name } });
+
+            if (candidate) return res.code(409).send();
+
+            const newRole = new Role({
+                    name,
+                    access_level: access_level ?? 0,
+                    is_default: is_default ?? false
+                }),
+                query = await prisma.role.create({
+                    data: newRole.toJSON()
+                });
+
+            return res.send(new Role(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 
     static async get(req, res) {
         try {

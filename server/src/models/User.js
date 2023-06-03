@@ -12,7 +12,7 @@ export class User {
         created_at = new Date(),
         updated_at = new Date()
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof person_id !== 'number') throw new Error('Parameter "person_id" must be "number" type');
         if (typeof username !== 'string') throw new Error('Parameter "username" must be "string" type');
         if (typeof login !== 'string') throw new Error('Parameter "login" must be "string" type');
@@ -24,6 +24,7 @@ export class User {
         this.id = id;
         this.person_id = person_id;
         this.username = username;
+        this.login = login;
         this.password = password;
         this.token = token;
         this.created_at = created_at;
@@ -37,6 +38,8 @@ export class User {
             id: this.id,
             person_id: this.person_id,
             username: this.username,
+            login: this.login,
+            password: this.password,
             token: this.token,
             created_at: this.created_at,
             updated_at: this.updated_at

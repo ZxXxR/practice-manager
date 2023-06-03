@@ -5,7 +5,7 @@ export class Role {
         access_level = 0, 
         is_default = false
     }) {
-        if (typeof id !== 'number') throw new Error('Parameter "id" must be "number" type');
+        if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof name !== 'string') throw new Error('Parameter "name" must be "string" type');
         if (typeof access_level !== 'number') throw new Error('Parameter "access_level" must be "number" type');
         if (typeof is_default !== 'boolean') throw new Error('Parameter "is_default" must be "boolean" type');
