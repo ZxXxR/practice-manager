@@ -1,3 +1,4 @@
+import authRouter from './authRouter.js';
 import directionRouter from './directionRouter.js';
 import enterpriseRouter from './enterpriseRouter.js';
 import groupRouter from './groupRouter.js';
@@ -9,6 +10,7 @@ import roleRouter from './roleRouter.js';
 import userRouter from './userRouter.js';
 
 export default (fastify, opts, done) => {
+    fastify.register(authRouter, { prefix: '/api/auth/' });
     fastify.register(directionRouter, { prefix: '/api/directions/' });
     fastify.register(enterpriseRouter, { prefix: '/api/enterprises/' });
     fastify.register(groupRouter, { prefix: '/api/groups/' });

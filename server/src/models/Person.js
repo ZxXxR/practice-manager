@@ -8,7 +8,7 @@ export class Person {
         phone_number = '',
         email = '',
         position = '',
-        group_id = null,
+        group_id = undefined,
         comment = '',
         created_at = new Date(),
         updated_at = new Date()

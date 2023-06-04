@@ -4,13 +4,12 @@ const prisma = new PrismaClient();
 
 export default async (req, res) => {
     if (req.method === 'OPTIONS') return res.send();
-    /*
+
     try {
-        let token = req.cookies?.session || req.headers?.authorization ? ((req.headers?.authorization).split(' '))[1] : null;
+        let token = req.cookies?.session || req.headers?.authorization ? ((req.headers?.authorization).split(' '))[1] : null,
+            user = null;
 
         if (!token) return res.status(401).send();
-
-        let user = null;
 
         const tokenType = token[1].split('.');
 
@@ -22,10 +21,26 @@ export default async (req, res) => {
                     return res.status(401).send();
                 }
 
-                user = await prisma.user.findFirst({ where: { login: decodedData.login } });
+                user = await prisma.user.findFirst({
+                    where: { login: decodedData.login },
+                    include: { 
+                        person: {
+                            include: { group: true }
+                        },
+                        roles: true 
+                    }
+                });
                 break;
             case 1: // API-Token
-                user = await prisma.user.findFirst({ where: { token } });
+                user = await prisma.user.findFirst({
+                    where: { token },
+                    include: { 
+                        person: {
+                            include: { group: true }
+                        },
+                        roles: true 
+                    }
+                });
                 break;
 
             default:
@@ -38,5 +53,5 @@ export default async (req, res) => {
     } catch (error) {
         console.error(error.toString());
         return res.status(500).send();
-    }*/
+    }
 }

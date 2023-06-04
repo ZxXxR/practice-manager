@@ -50,7 +50,7 @@ export class ReportController {
                 estimation,
                 comment
             } = req.body,
-                mentor_id = 1;//req.user.id;
+                mentor_id = req.user.id;
 
             if (
                 !practice_id || !student_id || !estimation ||
@@ -176,7 +176,7 @@ export class ReportController {
                     estimation,
                     comment
                 } = req.body,
-                mentor_id = 1;//req.user.id
+                mentor_id = req.user.id;
 
             const report = await prisma.report.findFirst({ where: { id: parseInt(id) } });
             
