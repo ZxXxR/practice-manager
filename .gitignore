@@ -2,6 +2,7 @@
 
 /.git
 /.vscode
+/.idea
 
 .gitpod.yml
 .env

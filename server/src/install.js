@@ -33,7 +33,7 @@ async function main() {
         const roles = await prisma.role.findFirst({});
 
         if (roles) {
-            console.error('[ ERROR ] The database is already installed!');
+            console.info('[ INFO ] The database is already installed!');
             process.exit(0);
         }
 
@@ -85,19 +85,12 @@ async function main() {
 
     // Присвоение ролей администратору
     try {
-        const roles = await prisma.role.findMany({
-            where: {
-                OR: [
-                    { name: 'Студент' },
-                    { name: 'Администратор' }
-                ]
-            }
+        const role = await prisma.role.findFirst({
+            where: { name: 'Администратор' }
         })
 
-        await prisma.roleAssignments.createMany({
-            data: roles.map(role => { 
-                return { user_id: user.id, role_id: role.id }
-            })
+        await prisma.roleAssignments.create({
+            data: { user_id: user.id, role_id: role.id }
         });
     } catch (e) {
         console.error(`[ ERROR ] An error occurred while trying to update administrator roles: "${e.toString()}"`);

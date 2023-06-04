@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Containerfile
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      - NGINX_DOMAIN=${HOST_DOMAIN}
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Containerfile
+    depends_on:
+      - nginx
+    restart: always
+    ports:
+      - "3000:3000"
