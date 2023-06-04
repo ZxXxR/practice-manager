@@ -35,7 +35,7 @@ model Group {
 
 model Practice {
   id           Int          @id @default(autoincrement())
-  name         String
+  name         String?
   direction    Int
   direction_id Direction    @relation(fields: [direction], references: [id])
   start_date   DateTime     @db.Date

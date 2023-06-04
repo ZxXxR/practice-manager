@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "groups" (
 
 CREATE TABLE IF NOT EXISTS "practices" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "name" VARCHAR(255) NULL UNIQUE,
+    "name" VARCHAR(255) NULL,
     "direction" INTEGER NOT NULL,
     "start_date" DATE NOT NULL,
     "end_date" DATE NOT NULL,
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS "enterprises" (
     "representative_id" INTEGER NOT NULL,
     "legal_form" VARCHAR(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL UNIQUE,
-    "ogrn" VARCHAR(255) NULL UNIQUE,
-    "inn" VARCHAR(255) NULL UNIQUE,
+    "ogrn" VARCHAR(255) NULL,
+    "inn" VARCHAR(255) NULL,
     "phone_number" VARCHAR(255) NULL,
     "email" VARCHAR(255) NULL,
     "legal_address" VARCHAR(255) NULL,

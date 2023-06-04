@@ -14,7 +14,7 @@ export default (fastify, opts, done) => {
     fastify.get('/', UserController.getAll);
     fastify.post('/', UserController.create);
     fastify.get('/:login/', UserController.get);
-    fastify.put('/:login/', UserController.update);
+    fastify.put('/:userLogin/', UserController.update);
     fastify.delete('/:login/', UserController.delete);
     done();
 }

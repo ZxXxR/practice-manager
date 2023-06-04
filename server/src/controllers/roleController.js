@@ -1,10 +1,9 @@
-import { Controller } from './controller.js';
 import { PrismaClient } from '@prisma/client';
 import { Role } from '../models/Role.js';
 
 const prisma = new PrismaClient();
 
-export class RoleController extends Controller {
+export class RoleController {
     static async getAll(req, res) {
         try {
             return await prisma.role.findMany({});
@@ -57,7 +56,34 @@ export class RoleController extends Controller {
         }
     }
 
-    // update
+    static async update(req, res) {
+        try {
+            const { id } = req.params,
+                { name, access_level, is_default } = req.body;
+
+            const role = await prisma.role.findFirst({ where: { id: parseInt(id) } }),
+                candidate = await prisma.role.findFirst({ where: { name } });
+
+            if (!role) return res.code(404).send();
+            if (candidate && role.name != name) return res.code(409).send();
+
+            const updatedRole = new Role({
+                    id: role.id,
+                    name: name ?? role.name,
+                    access_level: access_level ?? role.access_level,
+                    is_default: is_default ?? role.is_default
+                }),
+                query = await prisma.role.update({
+                    where: { id: role.id },
+                    data: updatedRole.toJSON()
+                });
+
+            return res.send(new Role(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
     
     static async delete(req, res) {
         try {

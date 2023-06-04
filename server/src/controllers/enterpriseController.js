@@ -1,4 +1,3 @@
-import { Controller } from './controller.js';
 import { PrismaClient } from '@prisma/client';
 import { Enterprise } from '../models/Enterprise.js';
 import objectRemoveKeys from '../utils/objectRemoveKeys.js';
@@ -6,7 +5,7 @@ import reformatDate from '../utils/reformatDate.js';
 
 const prisma = new PrismaClient();
 
-export class EnterpriseController extends Controller {
+export class EnterpriseController {
     static async getAll(req, res) {
         try {
             const enterprises = await prisma.enterprise.findMany({ 
@@ -119,7 +118,59 @@ export class EnterpriseController extends Controller {
         }
     }
 
-    // update
+    static async update(req, res) {
+        try {
+            const { id } = req.params,
+                {
+                    representative_id,
+                    legal_form,
+                    name,
+                    ogrn,
+                    inn,
+                    phone_number,
+                    email,
+                    legal_address,
+                    comment
+                } = req.body;
+
+            const enterprise = await prisma.enterprise.findFirst({ where: { id: parseInt(id) } });
+            
+            if (!enterprise) return res.code(404).send();
+
+            if (representative_id) {
+                const representativeEntry = await prisma.person.findFirst({ where: { id: parseInt(representative_id) } });
+                if (!representativeEntry) return res.code(400).send();
+            }
+
+            const updatedEnterprise = new Enterprise({
+                    id: enterprise.id,
+                    representative_id: representative_id ?? enterprise.representative_id,
+                    legal_form: legal_form ?? enterprise.legal_address,
+                    name: name ?? enterprise.name,
+                    ogrn: ogrn ?? enterprise.ogrn,
+                    inn: inn ?? enterprise.inn,
+                    phone_number: phone_number ?? enterprise.phone_number,
+                    email: email ?? enterprise.email,
+                    legal_address: legal_address ?? enterprise.legal_address,
+                    comment: comment ?? enterprise.comment
+                }),
+                query = await prisma.enterprise.update({
+                    where: { id: enterprise.id },
+                    data: updatedEnterprise.toJSON(), 
+                    include: { 
+                        representative: { include: { group: true } }  
+                    } 
+                });
+
+            return Object.assign(
+                objectRemoveKeys(new Enterprise(query).toJSON(), 'representative_id'),
+                { representative: query.representative }
+            );
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
     
     static async delete(req, res) {
         try {

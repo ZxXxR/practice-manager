@@ -1,4 +1,3 @@
-import { Controller } from './controller.js';
 import { PrismaClient } from '@prisma/client';
 import { Report } from '../models/Report.js';
 import objectRemoveKeys from '../utils/objectRemoveKeys.js';
@@ -6,7 +5,7 @@ import reformatDate from '../utils/reformatDate.js';
 
 const prisma = new PrismaClient();
 
-export class ReportController extends Controller {
+export class ReportController {
     static async getAll(req, res) {
         try {
             const reports = await prisma.report.findMany({
@@ -167,7 +166,86 @@ export class ReportController extends Controller {
         }
     }
 
-    // update
+    static async update(req, res) {
+        try {
+            const { id } = req.params,
+                {
+                    practice_id,
+                    student_id,
+                    date,
+                    estimation,
+                    comment
+                } = req.body,
+                mentor_id = 1;//req.user.id
+
+            const report = await prisma.report.findFirst({ where: { id: parseInt(id) } });
+            
+            if (!report) return res.code(404).send();
+
+            if (practice_id) {
+                const practiceEntry = await prisma.practice.findFirst({ where: { id: parseInt(practice_id) } });
+                if (!practiceEntry) return res.code(400).send();
+            }
+            
+            if (student_id) {
+                const studentEntry = await prisma.person.findFirst({ where: { id: parseInt(student_id) } });
+                if (!studentEntry) return res.code(400).send();
+            }
+
+            const updatedReport = new Report({
+                    id: report.id,
+                    practice_id: practice_id ?? report.practice_id,
+                    mentor_id,
+                    student_id: student_id ?? report.student_id,
+                    date: date ? new Date(date) : report.date,
+                    estimation: estimation ?? report.estimation,
+                    comment: comment ?? report.comment
+                }),
+                query = await prisma.report.update({
+                    where: { id: report.id },
+                    data: Object.assign(
+                        objectRemoveKeys(updatedReport.toJSON(), ['id', 'practice_id', 'mentor_id', 'student_id']), 
+                        {
+                            practice: {
+                                connect: { id: updatedReport.practice_id }
+                            },
+                            mentor: {
+                                connect: { id: updatedReport.mentor_id }
+                            },
+                            student: {
+                                connect: { id: updatedReport.student_id }
+                            }
+                        }
+                    ),
+                    include: {  
+                        practice: {
+                            include: { direction_id: true } 
+                        },
+                        mentor: {
+                            include: { group: true } 
+                        },
+                        student: {
+                            include: { group: true } 
+                        }
+                    }
+                });
+
+                return reformatDate(Object.assign(
+                    objectRemoveKeys(new Report(query).toJSON(), ['practice_id', 'mentor_id', 'student_id']),
+                    { 
+                        practice: objectRemoveKeys(
+                            Object.assign(query.practice, { direction: query.practice.direction_id }),
+                            'direction_id'
+                        ),
+                        mentor: query.mentor,
+                        student: query.student
+                    }
+                ));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
     
     static async delete(req, res) {
         try {

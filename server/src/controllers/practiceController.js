@@ -1,4 +1,3 @@
-import { Controller } from './controller.js';
 import { PrismaClient } from '@prisma/client';
 import { Practice } from '../models/Practice.js';
 import objectRemoveKeys from '../utils/objectRemoveKeys.js';
@@ -6,7 +5,7 @@ import reformatDate from '../utils/reformatDate.js';
 
 const prisma = new PrismaClient();
 
-export class PracticeController extends Controller {
+export class PracticeController {
     static async getAll(req, res) {
         try {
             const practices = await prisma.practice.findMany({ include: { direction_id: true, practiceAssignments: true } });
@@ -33,17 +32,15 @@ export class PracticeController extends Controller {
             const { name, direction, start_date, end_date, type } = req.body;
 
             if (
-                !name || !direction || !type || !(['education', 'production'].includes(type))
+                !direction || !type || !(['education', 'production'].includes(type))
             ) return res.code(400).send();
 
-            const candidate = await prisma.practice.findFirst({ where: { name } }),
-                directionEntry = await prisma.direction.findFirst({ where: { id: parseInt(direction) } });
+            const directionEntry = await prisma.direction.findFirst({ where: { id: parseInt(direction) } });
 
-            if (candidate) return res.code(409).send();
             if (!directionEntry)  return res.code(400).send();
 
             const newPractice = new Practice({
-                    name,
+                    name: name ?? '',
                     direction: parseInt(direction),
                     start_date: start_date ? new Date(start_date) : new Date(),
                     end_date: end_date ? new Date(end_date) : new Date(),
@@ -105,7 +102,49 @@ export class PracticeController extends Controller {
         }
     }
 
-    // update
+    static async update(req, res) {
+        try {
+            const { id } = req.params,
+                { name, direction, start_date, end_date, type } = req.body;
+
+            const practice = await prisma.practice.findFirst({ where: { id: parseInt(id) } });
+            
+            if (!practice) return res.code(404).send();
+            if (type && !(['education', 'production'].includes(type))) return res.code(400).send();
+            
+            if (direction) {
+                const directionEntry = await prisma.direction.findFirst({ where: { id: parseInt(direction) } });
+                if (!directionEntry) return res.code(400).send();
+            }
+
+            const updatedPractice = new Practice({
+                    id: practice.id,
+                    name: name ?? practice.name,
+                    direction: direction ?? practice.direction,
+                    start_date: start_date ? new Date(start_date) : practice.start_date,
+                    end_date: end_date ? new Date(end_date) : practice.end_date,
+                    type: type ?? practice.type
+                }),
+                query = await prisma.practice.update({
+                    where: { id: practice.id },
+                    data: updatedPractice.toJSON(),
+                    include: { direction_id: true, practiceAssignments: true }
+                });
+
+                return res.send(reformatDate(
+                    Object.assign(
+                        new Practice(query).toJSON(),
+                        {
+                            direction: query.direction_id,
+                            assignments: query.practiceAssignments
+                        }
+                    )
+                ));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
     
     static async delete(req, res) {
         try {
