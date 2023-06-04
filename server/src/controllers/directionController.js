@@ -54,5 +54,27 @@ export class DirectionController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const direction = await prisma.direction.findFirst({ where: { id: parseInt(id) } });
+
+            if (!direction) return res.status(404).send();
+
+            const dependenceEntry = await prisma.practice.findFirst({ where: { direction: direction.id } });
+
+            if (dependenceEntry) return res.status(409).send();
+
+            const query = await prisma.direction.delete({ where: { id: parseInt(id) } });
+
+            return res.send(new Direction(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

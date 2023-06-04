@@ -58,5 +58,31 @@ export class RoleController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id, cascade } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const role = await prisma.role.findFirst({ where: { id: parseInt(id) } });
+
+            if (!role) return res.status(404).send();
+
+            const dependenceEntry = await prisma.roleAssignments.findFirst({ where: { role_id: role.id } });
+
+            if (dependenceEntry) {
+                if (!cascade || cascade != true ) return res.status(409).send();
+
+                await prisma.roleAssignments.deleteMany({ where: { role_id: role.id } });
+            }
+
+            const query = await prisma.role.delete({ where: { id: role.id } });
+
+            return res.send(new Role(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

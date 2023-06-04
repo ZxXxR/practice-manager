@@ -120,5 +120,35 @@ export class EnterpriseController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const enterprise = await prisma.enterprise.findFirst({ where: { id: parseInt(id) } });
+
+            if (!enterprise) return res.status(404).send();
+
+            const dependenceEntry = await prisma.practiceAssignments.findFirst({ where: { enterprise_id: enterprise.id } });
+
+            if (dependenceEntry) return res.status(409).send();
+
+            const query = await prisma.enterprise.delete({ 
+                where: { id: enterprise.id }, 
+                include: { 
+                    representative: { include: { group: true } }  
+                } 
+            });
+
+            return Object.assign(
+                objectRemoveKeys(new Enterprise(query).toJSON(), 'representative_id'),
+                { representative: query.representative }
+            );
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

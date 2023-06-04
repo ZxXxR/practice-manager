@@ -111,5 +111,51 @@ export class PersonController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const person = await prisma.person.findFirst({ where: { id: parseInt(id) } });
+
+            if (!person) return res.status(404).send();
+
+            const dependenceAssignmentsEntry = await prisma.practiceAssignments.findFirst({
+                    where: {
+                        OR: [
+                            { responsible_id: person.id },
+                            { mentor_id: person.id },
+                            { student_id: person.id }
+                        ]
+                    } 
+                }),
+                dependenceEnterprisesEntry = await prisma.enterprise.findFirst({
+                    where: { representative_id: person.id } 
+                }),
+                dependenceReportsEntry = await prisma.report.findFirst({
+                    where: {
+                        OR: [
+                            { mentor_id: person.id },
+                            { student_id: person.id }
+                        ]
+                    } 
+                });
+
+            if (dependenceAssignmentsEntry || dependenceEnterprisesEntry || dependenceReportsEntry) return res.status(409).send();
+
+            const query = await prisma.person.delete({ where: { id: parseInt(id) }, include: { group: true } });
+
+            return res.send(reformatDate(
+                Object.assign(
+                    objectRemoveKeys(new Person(query).toJSON(), 'group_id'),
+                    { group: query.group }
+                )
+            ));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

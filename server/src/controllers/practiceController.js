@@ -106,5 +106,42 @@ export class PracticeController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const practice = await prisma.practice.findFirst({
+                where: { id: parseInt(id) },
+                include: { direction_id: true, practiceAssignments: true }
+            });
+            
+            if (!practice) return res.status(404).send();
+
+            const dependenceReportsEntry = await prisma.report.findFirst({ where: { practice_id: practice.id } }),
+                dependenceAssignmentsEntry = await prisma.practiceAssignments.findFirst({ where: { practice_id: practice.id } });
+
+            if (dependenceReportsEntry || dependenceAssignmentsEntry) return res.status(409).send();
+
+            const query = await prisma.practice.delete({
+                where: { id: parseInt(id) },
+                include: { direction_id: true, practiceAssignments: true }
+            });
+
+            return res.send(reformatDate(
+                Object.assign(
+                    new Practice(query).toJSON(),
+                    {
+                        direction: query.direction_id,
+                        assignments: query.practiceAssignments
+                    }
+                )
+            ));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

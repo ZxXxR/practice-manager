@@ -4,12 +4,12 @@ export class Enterprise {
         representative_id,
         legal_form,
         name,
-        ogrn = "",
-        inn = "",
-        phone_number = "",
-        email = "",
-        legal_address = "",
-        comment = ""
+        ogrn = '',
+        inn = '',
+        phone_number = '',
+        email = '',
+        legal_address = '',
+        comment = ''
     }) {
         if (typeof id !== 'number' && typeof id !== 'undefined') throw new Error('Parameter "id" must be "number" type');
         if (typeof representative_id !== 'number') throw new Error('Parameter "representative_id" must be "number" type');

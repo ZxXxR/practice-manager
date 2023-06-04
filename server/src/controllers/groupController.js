@@ -54,5 +54,27 @@ export class GroupController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const group = await prisma.group.findFirst({ where: { id: parseInt(id) } });
+
+            if (!group) return res.status(404).send();
+
+            const dependenceEntry = await prisma.person.findFirst({ where: { group_id: group.id } });
+
+            if (dependenceEntry) return res.status(409).send();
+
+            const query = await prisma.group.delete({ where: { id: group.id } });
+
+            return res.send(new Group(query).toJSON());
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS "enterprises" (
 
 CREATE TABLE IF NOT EXISTS "users" (
     "id" SERIAL NOT NULL PRIMARY KEY,
-    "person_id" INTEGER NOT NULL,
+    "person_id" INTEGER NOT NULL UNIQUE,
     "username" VARCHAR(255) NOT NULL UNIQUE,
     "login" VARCHAR(255) NOT NULL UNIQUE,
     "password" VARCHAR(255) NOT NULL,

@@ -63,7 +63,7 @@ model Person {
   created_at   DateTime        @db.Timestamp()
   updated_at   DateTime        @db.Timestamp()
   Enterprise   Enterprise[]
-  User         User[]
+  User         User?
 
   responsibles PracticeAssignments[] @relation("PracticeAssignmentsOnResponsible")
   mentors      PracticeAssignments[] @relation("PracticeAssignmentsOnMentor")
@@ -94,7 +94,7 @@ model Enterprise {
 
 model User {
   id         Int               @id @default(autoincrement())
-  person_id  Int
+  person_id  Int               @unique
   person     Person            @relation(fields: [person_id], references: [id])
   username   String
   login      String

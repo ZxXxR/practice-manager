@@ -51,11 +51,11 @@ export class ReportController extends Controller {
                 estimation,
                 comment
             } = req.body,
-                mentor_id = req.user.id;
+                mentor_id = 1;//req.user.id;
 
             if (
                 !practice_id || !student_id || !estimation ||
-                !(["two", "three", "four", "five", "absent"].includes(estimation))
+                !(['two', 'three', 'four', 'five', 'absent'].includes(estimation))
             ) return res.code(400).send();
 
             const candidate = await prisma.report.findFirst({ where: { 
@@ -89,10 +89,10 @@ export class ReportController extends Controller {
                                 connect: { id: newReport.practice_id }
                             },
                             mentor: {
-                                connect: { id: newReport.mentor_id}
+                                connect: { id: newReport.mentor_id }
                             },
                             student: {
-                                connect: { id: newReport.student_id}
+                                connect: { id: newReport.student_id }
                             }
                         }
                     ),
@@ -168,5 +168,60 @@ export class ReportController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const report = await prisma.report.findFirst({
+                where: { id: parseInt(id) },
+                include: { 
+                    practice: {
+                        include: { direction_id: true } 
+                    },
+                    mentor: {
+                        include: { group: true } 
+                    },
+                    student: {
+                        include: { group: true } 
+                    }
+                }
+            });
+
+            if (!report) return res.status(404).send();
+            
+            const query = await prisma.report.delete({
+                where: { id: parseInt(id) },
+                include: { 
+                    practice: {
+                        include: { direction_id: true } 
+                    },
+                    mentor: {
+                        include: { group: true } 
+                    },
+                    student: {
+                        include: { group: true } 
+                    }
+                }
+            });
+
+            return res.send(reformatDate(Object.assign(
+                objectRemoveKeys(new Report(query).toJSON(), ['practice_id', 'mentor_id', 'student_id']),
+                { 
+                    practice: objectRemoveKeys(
+                        Object.assign(query.practice, { direction: query.practice.direction_id }),
+                        'direction_id'
+                    ),
+                    practice: query.practice,
+                    mentor: query.mentor,
+                    student: query.student
+                }
+            )));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

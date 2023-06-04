@@ -138,5 +138,39 @@ export class UserController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { login } = req.params;
+
+            if (!login) return res.code(400).send();
+
+            const user = await prisma.user.findFirst({ where: { login } });
+
+            if (!user) return res.status(404).send();
+
+            await prisma.roleAssignments.deleteMany({ where: { user_id: user.id }});
+
+            const query = await prisma.user.delete({
+                where: { id: user.id },
+                include: { 
+                    person: {
+                        include: { group: true }
+                    },
+                    roles: true 
+                }
+            });
+
+            return res.send(reformatDate(Object.assign(
+                objectRemoveKeys(new User(query).toJSON(), ['person_id', 'password']),
+                { 
+                    person: objectRemoveKeys(query.person, 'group_id'),
+                    roles: query.roles
+                }
+            )));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }

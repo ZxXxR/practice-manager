@@ -224,5 +224,63 @@ export class AssignmentController extends Controller {
     }
 
     // update
-    // delete
+    
+    static async delete(req, res) {
+        try {
+            const { id } = req.params;
+
+            if (!id) return res.code(400).send();
+
+            const assignment = await prisma.practiceAssignments.findFirst({
+                where: { id: parseInt(id) }
+            });
+
+            if (!assignment) return res.status(404).send();
+
+            const query = await prisma.practiceAssignments.delete({
+                where: { id: parseInt(id) },
+                include: { 
+                    practice: {
+                        include: { direction_id: true } 
+                    },
+                    enterprise: {
+                        include: {
+                            representative: {
+                                include: { group: true }
+                            }
+                        }
+                    },
+                    responsible:  {
+                        include: { group: true } 
+                    },
+                    mentor: {
+                        include: { group: true } 
+                    },
+                    student: {
+                        include: { group: true } 
+                    }
+                }
+            })
+
+            return reformatDate(Object.assign(
+                objectRemoveKeys(
+                    new PracticeAssignment(query).toJSON(), 
+                    ['practice_id', 'enterprise_id', 'responsible_id', 'mentor_id', 'student_id']
+                ),
+                { 
+                    practice: objectRemoveKeys(
+                        Object.assign(query.practice, { direction: query.practice.direction_id }),
+                        'direction_id'
+                    ),
+                    enterprise: query.enterprise,
+                    responsible: query.responsible,
+                    mentor: query.mentor,
+                    student: query.student
+                }
+            ));
+        } catch (error) {
+            console.error(error.toString());
+            return res.code(500).send();
+        }
+    }
 }
