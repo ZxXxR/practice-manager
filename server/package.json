@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node ./src/index.js",
+    "install-system": "node ./src/install.js",
     "prisma:postgres": "npx prisma generate --schema=./schemas/postgres.prisma"
   },
   "dependencies": {

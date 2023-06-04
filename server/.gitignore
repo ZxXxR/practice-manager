@@ -3,6 +3,7 @@
 /.git
 /.vscode
 
+/schemas/migrations
 .gitpod.yml
 .env
 package-lock.json

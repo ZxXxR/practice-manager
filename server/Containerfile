@@ -1,7 +1,9 @@
-FROM node
+FROM node:latest
 WORKDIR /app
 COPY . .
 RUN npm install
 RUN npm run prisma:postgres
+RUN npx prisma migrate deploy --schema /app/schemas/postgres.prisma
+RUN npm run install-system
 CMD npm start
 EXPOSE 3000
