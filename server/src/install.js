@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { Role } from './models/Role.js';
@@ -13,7 +12,7 @@ async function main() {
     // Проверка ссылки базы данных
     if (
         !process.env.DB_URL_POSTGRES.length ||
-        process.env.DB_URL_POSTGRES == 'postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=require&pgbouncer=true&statement_cache_size=0'
+        process.env.DB_URL_POSTGRES === 'postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=require&pgbouncer=true&statement_cache_size=0'
     ) {
         console.error('[ ERROR ] Please, provide database connection string in .env');
         process.exit(1);
