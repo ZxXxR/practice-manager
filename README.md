@@ -1,13 +1,21 @@
 # Practice Manager
+
 ## Installation. Part 1.
 
 System requires [Node.js](https://nodejs.org/) v16+ to run.
 
-Copy .env file from example
+Clone repository
+
+```sh
+git clone https://github.com/ZxXxR/practice-manager/
+```
+
+Copy .env file from example and configure settings
 
 ```sh
 cd ./practice-manager/server
 cp .env.example .env
+vi .env
 ```
 
 File preview:
