@@ -63,7 +63,7 @@ cd ./practice-manager
 docker compose up -d
 ```
 
-The server will be available at **http://127.0.0.1** with a reverse proxying system from nginx.
+The server will be available at **http://127.0.0.1** with a reverse proxying system from nginx. \
 The API part is also available at **http://127.0.0.1:3000/api/**.
 
 ## License
